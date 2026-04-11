@@ -1,0 +1,114 @@
+
+
+---
+
+Dependencies
+
+System Packages (Ubuntu/Debian)
+
+Install required system packages:
+
+sudo apt update
+sudo apt install -y \
+  python3 \
+  python3-venv \
+  python3-pip \
+  git \
+  curl \
+  jq \
+  lm-sensors \
+  ethtool
+
+---
+
+Python Environment
+
+Create and activate a virtual environment:
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+Install Python dependencies:
+
+pip install \
+  python-telegram-bot \
+  requests
+
+
+---
+
+Ollama (Local LLM Runtime)
+
+Install Ollama:
+
+curl -fsSL https://ollama.com/install.sh | sh
+
+Start the service:
+
+ollama serve
+
+Pull models:
+
+ollama pull llama3
+ollama pull llama3.1:8b
+ollama pull qwen2.5:7b
+ollama pull qwen2.5-coder:7b
+
+
+---
+
+Web UI (Optional)
+
+Run Open WebUI using Docker:
+
+docker run -d \
+  -p 3000:8080 \
+  -e OLLAMA_BASE_URL=http://<SERVER_IP>:11434 \
+  --name open-webui \
+  ghcr.io/open-webui/open-webui:main
+
+
+---
+
+VPN (Remote Access)
+
+Install and start Tailscale:
+
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscale up
+
+
+---
+
+Telegram Bot Configuration
+
+Create a bot using BotFather and configure environment variables:
+
+TELEGRAM_TOKEN=your_token_here
+OLLAMA_URL=http://127.0.0.1:11434/api/chat
+OLLAMA_MODEL=qwen2.5:7b
+ALLOWED_CHAT_ID=your_chat_id
+
+Store these values in a .env file in the project directory.
+
+
+---
+
+Systemd Service
+
+Example service file:
+
+[Unit]
+Description=Telegram Ollama Bot
+After=network.target
+
+[Service]
+User=kraken
+WorkingDirectory=/data/projects/telegram-bot
+ExecStart=/data/projects/telegram-bot/.venv/bin/python bot.py
+Restart=always
+EnvironmentFile=/data/projects/telegram-bot/.env
+
+[Install]
+WantedBy=multi-user.target
+
