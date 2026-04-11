@@ -1,0 +1,390 @@
+
+---
+
+Stage 2 — System Control, Safety, and Observability
+
+Overview
+
+Stage 2 focuses on evolving the system from a functional local AI assistant into a safe, controllable, and observable remote system operator.
+
+The priorities for this stage are:
+
+reducing risk (privilege separation and restricted access)
+
+enabling controlled system operations (power, services, network)
+
+adding visibility into system health
+
+introducing monitoring and alerting
+
+improving safety of tool execution
+
+
+This stage shifts the project from:
+
+“useful assistant”
+
+to:
+
+“reliable operational interface for a headless server”
+
+
+---
+
+Stage 2 Objectives
+
+introduce strict privilege separation
+
+safely enable remote power control
+
+implement Wake-on-LAN for recovery
+
+provide system visibility (temps, services, logs)
+
+add monitoring and alerting
+
+replace unsafe command execution with structured tools
+
+prepare system for future automation and expansion
+
+
+
+---
+
+Phase 2.1 — Privilege Separation and Hardening
+
+Goal
+
+Run the bot as a dedicated service account with minimal permissions.
+
+Tasks
+
+create a dedicated system user for the bot
+
+move the systemd service to run under this user
+
+restrict file ownership and access to project directory
+
+define explicit sudo permissions for allowed commands only
+
+remove or restrict broad shell execution (/run)
+
+
+Notes
+
+This must be completed before adding high-impact features such as reboot, shutdown, or firewall control.
+
+Output
+
+isolated bot runtime environment
+
+reduced risk of accidental or malicious system changes
+
+
+
+---
+
+Phase 2.2 — Safe Power Control
+
+Goal
+
+Enable controlled remote reboot and shutdown of the server.
+
+Tasks
+
+add /reboot confirm command
+
+add /shutdown confirm command
+
+ensure commands are:
+
+explicit
+
+confirmation-protected
+
+not triggered via natural language
+
+
+log all power actions
+
+
+Notes
+
+Power commands must never be automatically triggered by AI or inferred from user intent.
+
+Output
+
+safe, deliberate remote power control
+
+
+
+---
+
+Phase 2.3 — Wake-on-LAN
+
+Goal
+
+Enable remote power-on of the server after shutdown.
+
+Tasks
+
+enable Wake-on-LAN in BIOS/UEFI
+
+enable WoL in the operating system
+
+identify and document:
+
+network interface
+
+MAC address
+
+
+test wake functionality from another device
+
+define external trigger method (e.g. another machine or mobile app)
+
+
+Notes
+
+Wake-on-LAN cannot be triggered from the powered-off server itself.
+
+Output
+
+reliable recovery path after shutdown
+
+
+
+---
+
+Phase 2.4 — Monitoring Visibility Commands
+
+Goal
+
+Provide real-time system status through the bot.
+
+Commands
+
+/temps → CPU and GPU temperatures
+
+/gpu → GPU usage and status
+
+/ip → network addresses and hostname
+
+/services → status of key services
+
+/journal <service> → recent logs (whitelisted services only)
+
+
+Notes
+
+These commands should be read-only and safe.
+
+Output
+
+improved remote visibility into system state
+
+
+
+---
+
+Phase 2.5 — Monitoring and Alerting
+
+Goal
+
+Automatically detect and report system issues.
+
+Tasks
+
+implement background monitoring checks:
+
+CPU temperature
+
+GPU temperature
+
+disk usage
+
+memory usage
+
+service availability
+
+
+define alert thresholds
+
+send alerts via Telegram
+
+optionally summarize alerts using the AI model
+
+
+Notes
+
+Monitoring logic should be deterministic and not rely on AI decision-making.
+
+Output
+
+proactive system health notifications
+
+
+
+---
+
+Phase 2.6 — Safer Tool Execution and Automation
+
+Goal
+
+Replace broad command execution with structured and safe tools.
+
+Tasks
+
+define tool categories:
+
+read-only tools
+
+action tools
+
+
+introduce confirmation requirements for state-changing actions
+
+restrict or remove generic /run command
+
+implement tool whitelist
+
+optionally introduce tool registry for management
+
+
+Notes
+
+This phase ensures the system remains safe as more capabilities are added.
+
+Output
+
+controlled and auditable tool execution
+
+
+
+---
+
+Phase 2.7 — Network and Firewall Control
+
+Goal
+
+Allow safe management of network rules.
+
+Tasks
+
+implement wrapper scripts for firewall operations
+
+add commands:
+
+list blocked IPs
+
+block IP
+
+unblock IP
+
+
+require confirmation for all actions
+
+log all changes
+
+protect:
+
+local network ranges
+
+VPN (Tailscale) network
+
+trusted access paths
+
+
+
+Notes
+
+Firewall control must be explicit and never AI-driven.
+
+Output
+
+safe and auditable network control
+
+
+
+---
+
+Phase 2.8 — Backup and Version Control
+
+Goal
+
+Ensure system can be restored and maintained reliably.
+
+Tasks
+
+create private GitHub repository
+
+add:
+
+.gitignore
+
+.env.example
+
+documentation
+
+
+commit stable codebase
+
+document setup and recovery process
+
+
+Notes
+
+Sensitive data must not be committed.
+
+Output
+
+reproducible and maintainable project state
+
+
+
+---
+
+Recommended Execution Order
+
+1. Privilege separation and hardening
+
+
+2. Safe power control
+
+
+3. Wake-on-LAN
+
+
+4. Monitoring visibility commands
+
+
+5. Monitoring and alerting
+
+
+6. Safer tool execution and automation
+
+
+7. Network and firewall control
+
+
+8. GitHub backup and documentation
+
+
+
+
+---
+
+Summary
+
+Stage 2 transforms the system into a controlled operational tool by:
+
+reducing risk through isolation and permission control
+
+enabling safe remote management
+
+adding visibility and alerting
+
+preparing for structured automation
+
+
+The result is a system that is not only functional, but also safe, maintainable, and suitable for real-worlrd usage.
