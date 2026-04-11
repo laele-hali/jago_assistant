@@ -1,0 +1,6 @@
+.venv/
+.env
+memory/
+__pycache__/
+*.pyc
+current_model.txt
