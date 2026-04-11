@@ -1,0 +1,328 @@
+
+---
+
+Stage 1 — Local AI Assistant (Foundation)
+
+Overview
+
+Stage 1 focused on building a fully local, private AI assistant with:
+
+local LLM inference
+
+remote access via VPN
+
+Telegram-based interaction
+
+persistent memory and sessions
+
+basic system tooling
+
+
+The goal started as "run a local model" and quickly moved onto:
+
+“usable, persistent, remote AI assistant with real utility”
+
+
+---
+
+Architecture
+
+Core components:
+
+Ollama (local LLM runtime)
+
+Open WebUI (LLM web interface)
+
+Tailscale (mesh VPN)
+
+python-telegram-bot (Telegram integration)
+
+
+Flow:
+
+Telegram → bot.py → state.py → ollama_client.py → Ollama → Model
+↓
+tools.py
+
+
+---
+
+Stage 1 Deliverables
+
+1. Local LLM Deployment
+
+Installed and configured Ollama
+
+Pulled and tested multiple models:
+
+general models (e.g. LLaMA, Qwen)
+
+coding models (e.g. Qwen coder)
+
+
+Exposed local API: http://127.0.0.1:11434
+
+
+
+---
+
+2. Web UI Integration
+
+Deployed Open WebUI via Docker
+
+Connected to Ollama backend
+
+Enabled:
+
+browser-based chat
+
+system prompts
+
+multi-conversation UI
+
+
+
+Acts as the primary desktop interface.
+
+
+---
+
+3. Secure Remote Access
+
+Configured Tailscale VPN
+
+Enabled private access to:
+
+Web UI
+
+server services
+
+bot backend
+
+
+
+No public port exposure required.
+
+
+---
+
+4. Telegram Bot Interface
+
+Built custom Telegram bot using python-telegram-bot
+
+Runs as a systemd service:
+
+
+telegram-ollama-bot.service
+
+Features:
+
+mobile access to local AI
+
+persistent connection
+
+controlled access via chat ID
+
+
+
+---
+
+5. Streaming Responses
+
+Implemented streaming from Ollama API
+
+Replaced “wait → full reply” with:
+
+progressive message updates
+
+improved responsiveness
+
+
+
+
+---
+
+6. Session System (Multi-Conversation Support)
+
+Telegram lacks native conversation threads, so sessions were introduced:
+
+Commands:
+
+/session <name>
+/sessions
+/delsession <name>
+
+Each session:
+
+has independent memory
+
+can use different models
+
+
+
+---
+
+7. Persistent Memory
+
+Chat history stored per session:
+
+
+/data/projects/telegram-bot/memory/<chat_id>/<session>.json
+
+Automatically:
+
+loaded on access
+
+trimmed to max history
+
+saved after each interaction
+
+
+
+Also persisted:
+
+<chat_id>_current_session.txt
+
+
+---
+
+8. Model Management
+
+Commands:
+
+/models
+/setmodel <model>
+/model
+
+Features:
+
+dynamic model switching
+
+per-session model assignment
+
+model list pulled from Ollama
+
+
+
+---
+
+9. Tooling System (Phase 1)
+
+Manual tools:
+
+/uptime
+/disk
+/sysinfo
+/run <command>
+
+Provides:
+
+system visibility
+
+basic remote control
+
+
+
+---
+
+10. Automatic Tool Usage (Basic)
+
+Implemented keyword-based routing:
+
+Examples:
+
+“how long has the server been up” → uptime tool
+
+“disk space” → disk tool
+
+
+Flow:
+
+user message → tool detection → tool execution → AI explanation
+
+
+---
+
+11. Codebase Refactor
+
+Split monolithic bot into modular structure:
+
+bot.py            → Telegram handlers
+state.py          → sessions + memory
+ollama_client.py  → API interaction
+tools.py          → system utilities
+config.py         → environment/config
+
+Benefits:
+
+easier maintenance
+
+reduced duplication bugs
+
+cleaner extension for future features
+
+
+
+---
+
+Stage 1 Outcomes
+
+By the end of Stage 1, the system provides:
+
+private, local AI assistant
+
+persistent multi-session conversations
+
+remote access via Telegram
+
+real-time streaming responses
+
+basic system introspection tools
+
+modular, extensible codebase
+
+---
+
+Known Limitations
+
+Tool routing is keyword-based (not true intent detection)
+
+/run command is broad and not fully restricted
+
+Bot runs under primary user (no privilege separation yet)
+
+No automated monitoring or alerting
+
+No structured tool permission system
+
+No Git-based version control at initial stage
+
+
+
+---
+
+Stage 2 Preview
+
+Stage 2 will focus on:
+
+security hardening (dedicated user, restricted permissions)
+
+safe system control (reboot, shutdown, firewall)
+
+monitoring and alerting
+
+structured tool framework
+
+GitHub integration and backup
+
+
+
+---
+
+Summary
+
+Stage 1 established the core platform:
+
+a locally hosted, persistent, remotely accessible AI assistant with system awareness
+
+The foundation is now stable enough to safely expand into controlled automation and operational tooling in Stage 2.
