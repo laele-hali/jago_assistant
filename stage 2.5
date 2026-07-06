@@ -2,3 +2,57 @@ gateway layer
 
 redis semantc caching
 
+this will need a check for like data requests like disk space, temps etc 
+
+if its a request for somthing like this, then do not look for a cached answer
+
+
+Telegram Message ➡️  [Gateway Layer] ➡️ Reads config.yaml
+                             |
+         📑 Matches Bypass? -+-------------------+
+
+         | (Yes)                                 | (No)
+         v                                       v
+⚡ Execute Live Python Script           🤖 Route to Cached Ollama LLM
+  (Get fresh RAM, Temps, Disk)            (Answer general queries)
+
+  THIS IS JUST AN EXAMPLE
+
+  need to wor out and copy the actual code into this file
+
+  # config.yaml
+cache_bypass_rules:
+  - command: "/disk"
+    keywords: ["disk space", "storage left", "hard drive"]
+    action: "get_disk_space"
+
+  - command: "/temps"
+    keywords: ["temperature", "running hot", "cpu temp", "cpu heat"]
+    action: "get_cpu_temperature"
+
+  - command: "/ram"
+    keywords: ["memory usage", "free ram", "system memory"]
+    action: "get_ram_usage"
+
+
+Will then need a gateway layer config, to run through this efore it hits the llm itself
+
+maybe need to work on a catch all to future proof? or a way to add to the config quicky, like if i wanted to add server time or somthing?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
